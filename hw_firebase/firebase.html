@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<div class="container">
+
+    <div id="js-question" class="mt-3 alert-primary" role="alert">
+        問題が出る場所
+    </div>
+
+    <div class="d-flex justify-content-center">
+    <button type="button" class="btn btn-primary">回答1</button> 
+    <button type="button" class="ml-1 btn btn-primary">回答1</button> 
+    <button type="button" class="ml-1 btn btn-primary">回答1</button>
+    <button type="button" class="ml-1 btn btn-primary">回答1</button> 
+    </div>
+</div>
+
+
+<div>
+    <button id="send">結果を保存</button>
+</div>
+
+<div id="output"></div>
+</div>　　　　
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.1.1/firebase.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<script src="https://www.gstatic.com/firebasejs/8.1.1/firebase.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyCTZ2i_nerPiJPY2D3RJoFXY50KaGBSq3U",
+    authDomain: "hw-firebase-b57ab.firebaseapp.com",
+    databaseURL: "https://hw-firebase-b57ab.firebaseio.com",
+    projectId: "hw-firebase-b57ab",
+    storageBucket: "hw-firebase-b57ab.appspot.com",
+    messagingSenderId: "182251627357",
+    appId: "1:182251627357:web:fd3d98a6887c52c04dbeb4"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  const newPostRef = firebase.database().ref();
+
+  $("send").on("click", function(){
+      newPostRef.push({
+        text:$("#question").val()
+      })
+      $("#question").val("");
+    })
+
+    newPostRef.on("child_added", function (data) {
+      //ここに保存されたデータが全て入ってくる
+      let v = data.val();
+
+      let str = `<p>${v.question}<p>`;
+
+// ここでデータをhtmlに埋め込む prependには変数を埋め込もう！
+$("#output").prepend(str);
+});
+
+$("question").on("keydown", function (event) {
+
+// eventの中身をconsole.logでみてみよう！
+console.log(e)
+})
+
+</script>
+
+
+<script>
+const quiz = [
+  {
+    question: 'ボウリングで全てストライクのパーフェクトゲームを達成！さて得点は何点？',
+    answers: [ '300点', '295点', '310点', '280点'],
+    correct: '300点'
+  }, {
+    question: '高校球児のあこがれは「甲子園球場」。では「花園」がメッカの高校スポーツは？',
+    answers: [ 'ラグビー', 'サッカー', '柔道', 'ハンドボール'],
+    correct: 'ラグビー'
+  }, {
+    question: '外国からの輸入品に対して課せられる税金のことを何税というでしょう？',
+    answers: [ '輸入税', '旅行税', '関税', '入国税'],
+    correct: '関税'
+  }
+];
+
+const $window = window;
+const $doc = document;
+const $question = $doc.getElementById('js-question');
+const $buttons = $doc.querySelectorAll('.btn');
+
+const quizLen = quiz.length;
+let quizCount = 0;
+let score = 0;
+
+const init = () => {
+  $question.textContent = quiz[quizCount].question;
+  
+  const buttonLen = $buttons.length;
+  let btnIndex = 0;
+  
+  while(btnIndex < buttonLen){
+    $buttons[btnIndex].textContent = quiz[quizCount].answers[btnIndex];
+    btnIndex++;
+  }
+};
+
+const goToNext = () => {
+  quizCount++;
+  if(quizCount < quizLen){
+    init(quizCount);
+  } else {
+    // $window.alert('クイズ終了！');
+    showEnd();
+  }
+};
+
+const judge = (elm) => {
+  if(elm.textContent === quiz[quizCount].correct){
+    $window.alert('正解!');
+    score++;
+  } else {
+    $window.alert('不正解!');
+  }
+  goToNext();
+};
+
+const showEnd = () => {
+  $question.textContent = '終了！あなたのスコアは' + score + '/' + quizLen + 'です';
+  
+  const $items = $doc.getElementById('js-items');
+  $items.style.visibility = 'hidden';
+};
+
+init();
+
+let answersIndex = 0;
+let answersLen = quiz[quizCount].answers.length;
+
+while(answersIndex < answersLen){
+  $buttons[answersIndex].addEventListener('click', (e) => {
+    judge(e.target);
+  });
+  answersIndex++;
+}
+
+</script>
+</body>
+</html>
